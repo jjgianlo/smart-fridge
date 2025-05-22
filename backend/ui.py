@@ -1,45 +1,59 @@
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, request, jsonify, redirect, url_for
+from flask_cors import CORS
 import requests
+from database import get_user_by_email
 
 views_bp = Blueprint('views', __name__)
+CORS(views_bp)  # Enable CORS for all routes in this blueprint
 
-@views_bp.route('/')
+@views_bp.route('/api/login', methods=['POST'])
 def login():
-    """Render the login page."""
-    return render_template('login.html')
+    """Handle login requests and return user data."""
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    
+    # For demonstration purposes - in a real app, you'd validate the password
+    user = get_user_by_email(email)
+    
+    if user:
+        user_data = {
+            "user_id": user[0],
+            "username": user[1],
+            "email": user[2]
+        }
+        return jsonify(user_data), 200
+    
+    return jsonify({"error": "Invalid credentials"}), 401
 
-@views_bp.route('/fridges', methods=['GET', 'POST'])
-def show_fridges():
-    """Handle login POST and display all fridges."""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        # Optional: hier kannst du echte Authentifizierung anstoßen
-        print(f"Login attempt: {email} / {password}")  # für Debug
-        return redirect(url_for('views.show_fridges'))  # Weiterleitung nach Login
+@views_bp.route('/api/dashboard/<int:user_id>')
+def dashboard_data(user_id):
+    """Get dashboard data for a user."""
+    # Get fridges
+    fridges_response = requests.get(f'http://localhost:5000/fridges/user/{user_id}')
+    fridges = fridges_response.json() if fridges_response.status_code == 200 else []
+    
+    # Get products
+    products_response = requests.get(f'http://localhost:5000/products/user/{user_id}')
+    products = products_response.json() if products_response.status_code == 200 else []
+    
+    # Calculate summary statistics
+    total_fridges = len(fridges)
+    total_products = len(products)
+    
+    # You could calculate more statistics here
+    
+    return jsonify({
+        "stats": {
+            "total_fridges": total_fridges,
+            "total_products": total_products
+        },
+        "recent_fridges": fridges[:3],
+        "recent_products": products[:3]
+    }), 200
 
-    # GET: Fridge anzeigen
-    response = requests.get('http://localhost:5000/fridges/user/1')
-    fridges = response.json() if response.status_code == 200 else []
-    return render_template('fridges.html', fridges=fridges)
-
-@views_bp.route('/fridge/<int:fridge_id>')
-def fridge_contents(fridge_id):
-    """Display contents of a specific fridge."""
-    response = requests.get(f'http://localhost:5000/fridges/{fridge_id}/contents')
-    fridge = response.json() if response.status_code == 200 else []
-    return render_template('fridge_contents.html', fridge=fridge, fridge_id=fridge_id)
-
-@views_bp.route('/products')
-def all_products():
-    """Display all products for the current user."""
-    response = requests.get('http://localhost:5000/products/user/1')
-    products = response.json() if response.status_code == 200 else []
-    return render_template('products.html', products=products)
-
-@views_bp.route('/shopping-list', methods=['POST'])
-def create_shopping_list():
-    """Create a shopping list from selected products."""
-    selected = request.form.getlist('product')
-    return render_template('shopping_list.html', selected=selected)
+@views_bp.route('/api/health')
+def health_check():
+    """Simple health check endpoint."""
+    return jsonify({"status": "ok", "message": "Service is running"}), 200

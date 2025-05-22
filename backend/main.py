@@ -5,6 +5,7 @@ Handles application initialization and configuration.
 """
 
 from flask import Flask
+from flask_cors import CORS
 from database import initialize_database
 
 # Import blueprints
@@ -16,6 +17,7 @@ from ui import views_bp
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
+    CORS(app)  # Enable CORS for all routes
     
     # Initialize database
     initialize_database()
