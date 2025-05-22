@@ -6,7 +6,7 @@ import os
 from database import get_user_by_email
 
 views_bp = Blueprint('views', __name__)
-CORS(views_bp)  # Enable CORS for all routes in this blueprint
+CORS(views_bp,origins=["http://127.0.0.1:5000"])  # Enable CORS for all routes in this blueprint
 
 # API endpoints
 @views_bp.route('/api/login', methods=['POST'])
