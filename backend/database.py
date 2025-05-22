@@ -113,10 +113,10 @@ def add_user(username, email, password_hash):
     finally:
         conn.close()
 
-def get_user_by_username(username):
+def get_user_by_email(email):
     conn = create_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM user WHERE username = ?', (username,))
+    cursor.execute('SELECT * FROM user WHERE email = ?', (email,))
     user = cursor.fetchone()
     conn.close()
     return user

@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from database import add_user, get_user_by_username, get_user_by_id, user_exists_by_email, create_connection
+from database import add_user, get_user_by_email, get_user_by_id, user_exists_by_email, create_connection
 
 user_bp = Blueprint('user_bp', __name__, url_prefix='/users')
 
@@ -15,9 +15,9 @@ def create_user():
         return jsonify({"message": "User created successfully."}), 201
     return jsonify({"error": "User creation failed."}), 500
 
-@user_bp.route('/<username>', methods=['GET'])
-def read_user(username):
-    user = get_user_by_username(username)
+@user_bp.route('/<email>', methods=['GET'])
+def read_user(email):
+    user = get_user_by_email(email)
     if user:
         user_data = {
             "user_id": user[0],

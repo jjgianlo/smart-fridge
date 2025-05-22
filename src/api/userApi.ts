@@ -12,13 +12,8 @@ export interface User {
 
 export const loginUser = async (email: string, password: string): Promise<User | null> => {
   try {
-    // First, find the username based on email and password
-    // In a real app with proper authentication, this would be a POST to a login endpoint
-    // For now, we'll use the email as username since the backend expects username parameter
-    const username = email.split('@')[0]; // Simple extraction of username from email
-    
-    // Call the endpoint to get user by username
-    const response = await axios.get(`${API_URL}/users/${username}`);
+    // Call the endpoint to get user by email directly
+    const response = await axios.get(`${API_URL}/users/${email}`);
     return response.data;
   } catch (error) {
     console.error('Login failed:', error);
