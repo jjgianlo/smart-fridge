@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { 
   Home, 
-  Package, 
   Package2, 
   PackageOpen, 
   PackagePlus, 
@@ -20,7 +19,7 @@ const Sidebar: React.FC = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <Home className="h-5 w-5" /> },
-    { name: 'My Fridges', path: '/fridges', icon: <Package className="h-5 w-5" /> },
+    { name: 'My Fridges', path: '/fridges', icon: <Package2 className="h-5 w-5" /> },
     { name: 'Products', path: '/products', icon: <PackageOpen className="h-5 w-5" /> },
     { name: 'Add Product', path: '/add-product', icon: <PackagePlus className="h-5 w-5" /> },
     { name: 'Settings', path: '/settings', icon: <Settings className="h-5 w-5" /> },

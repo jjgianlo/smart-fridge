@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Fridge, FridgeItem, getFridgeContents, getFridgesByUser, Product, getProductsByUser } from '@/api/fridgeApi';
-import { PackageOpen, Package2, AlertTriangle } from 'lucide-react';
+import { Package2, PackageOpen, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -132,7 +132,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
-              <Package className="h-8 w-8 text-primary mr-3" />
+              <Package2 className="h-8 w-8 text-primary mr-3" />
               <div>
                 <p className="text-3xl font-bold">{fridges.length}</p>
                 <p className="text-sm text-muted-foreground">
@@ -194,7 +194,7 @@ const Dashboard = () => {
                 {fridges.map((fridge) => (
                   <div key={fridge.fridge_id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Package className="h-6 w-6 text-primary" />
+                      <Package2 className="h-6 w-6 text-primary" />
                       <span className="font-medium">{fridge.title}</span>
                     </div>
                     <Button variant="outline" onClick={() => navigate(`/fridge/${fridge.fridge_id}`)}>

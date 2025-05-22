@@ -168,3 +168,47 @@ export const createProduct = async (
     return false;
   }
 };
+
+// Add the missing functions
+export const getFridgeByDetail = async (fridgeId: number): Promise<Fridge | null> => {
+  try {
+    const response = await axios.get(`${API_URL}/fridges/${fridgeId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch fridge details:', error);
+    return null;
+  }
+};
+
+export const deleteProduct = async (productId: number): Promise<boolean> => {
+  try {
+    await axios.delete(`${API_URL}/products/${productId}`);
+    return true;
+  } catch (error) {
+    console.error('Failed to delete product:', error);
+    return false;
+  }
+};
+
+export const updateProduct = async (
+  productId: number,
+  name: string,
+  kategorie: string,
+  einheit: string,
+  bildUrl: string = '',
+  barcodePath: string = ''
+): Promise<boolean> => {
+  try {
+    await axios.put(`${API_URL}/products/${productId}`, {
+      name,
+      kategorie,
+      einheit,
+      bild_url: bildUrl,
+      barcode_path: barcodePath
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to update product:', error);
+    return false;
+  }
+};
