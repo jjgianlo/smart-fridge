@@ -4,6 +4,7 @@ Main entry point for the Smart Fridge application.
 Handles application initialization and configuration.
 """
 
+import os
 from flask import Flask
 from flask_cors import CORS
 from database import initialize_database
@@ -16,7 +17,10 @@ from ui import views_bp
 
 def create_app():
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    # Determine the directory where the React build will be located
+    static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../dist')
+    
+    app = Flask(__name__, static_folder=static_folder, static_url_path='')
     CORS(app)  # Enable CORS for all routes
     
     # Initialize database

@@ -1,12 +1,14 @@
 
-from flask import Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from flask_cors import CORS
 import requests
+import os
 from database import get_user_by_email
 
 views_bp = Blueprint('views', __name__)
 CORS(views_bp)  # Enable CORS for all routes in this blueprint
 
+# API endpoints
 @views_bp.route('/api/login', methods=['POST'])
 def login():
     """Handle login requests and return user data."""
@@ -42,8 +44,6 @@ def dashboard_data(user_id):
     total_fridges = len(fridges)
     total_products = len(products)
     
-    # You could calculate more statistics here
-    
     return jsonify({
         "stats": {
             "total_fridges": total_fridges,
@@ -57,3 +57,13 @@ def dashboard_data(user_id):
 def health_check():
     """Simple health check endpoint."""
     return jsonify({"status": "ok", "message": "Service is running"}), 200
+
+# Serve React App
+@views_bp.route('/', defaults={'path': ''})
+@views_bp.route('/<path:path>')
+def serve_react(path):
+    """Serve the React frontend."""
+    if path and os.path.exists(os.path.join(current_app.static_folder, path)):
+        return send_from_directory(current_app.static_folder, path)
+    else:
+        return send_from_directory(current_app.static_folder, 'index.html')
