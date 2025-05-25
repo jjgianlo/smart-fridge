@@ -3,8 +3,8 @@ from flask import Blueprint, request, jsonify
 from database import (
     add_fridge, get_fridges_by_user, get_fridge_by_id,
     update_fridge, delete_fridge,
-    add_product_to_fridge, get_contents_of_fridge, remove_product_from_fridge,
-    update_fridge_contents_item
+    store_product_in_fridge, get_contents_of_fridge, remove_product_from_fridge,
+    update_fridge_item
 )
 
 fridge_bp = Blueprint('fridge_bp', __name__, url_prefix='/fridges')
@@ -62,7 +62,7 @@ def store_product(fridge_id):
     haltbarkeit = data.get('haltbarkeit', '')
     lagerdatum = data.get('lagerdatum', '')
 
-    success = add_product_to_fridge(
+    success = store_product_in_fridge(
         data['product_id'], fridge_id, data['menge'], haltbarkeit, lagerdatum
     )
     if success:
@@ -75,7 +75,7 @@ def update_fridge_entry(entry_id):
     if not all(k in data for k in ['menge', 'haltbarkeit', 'lagerdatum']):
         return jsonify({"error": "menge, haltbarkeit and lagerdatum required."}), 400
 
-    success = update_fridge_contents_item(entry_id, data['menge'], data['haltbarkeit'], data['lagerdatum'])
+    success = update_fridge_item(entry_id, data['menge'], data['haltbarkeit'], data['lagerdatum'])
     if success:
         return jsonify({"message": "Fridge item updated."}), 200
     return jsonify({"error": "Entry not found or update failed."}), 404
