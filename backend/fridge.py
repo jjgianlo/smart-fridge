@@ -1,11 +1,16 @@
-
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from database import (
     add_fridge, get_fridges_by_user, get_fridge_by_id,
     update_fridge, delete_fridge,
     store_product_in_fridge, get_contents_of_fridge, remove_product_from_fridge,
     update_fridge_item
 )
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+from datetime import datetime
 
 fridge_bp = Blueprint('fridge_bp', __name__, url_prefix='/fridges')
 
@@ -103,3 +108,71 @@ def remove_product(fridge_id, in_fridge_id):
     if success:
         return jsonify({"message": "Product removed from fridge."}), 200
     return jsonify({"error": "Product not found in fridge or removal failed."}), 404
+
+@fridge_bp.route('/shopping_list', methods=['POST'])
+def generate_shopping_list_pdf():
+    try:
+        shopping_list = request.json
+        if not shopping_list:
+            return jsonify({"error": "No shopping list data provided."}), 400
+
+        # Create a PDF in memory
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Add title
+        title = Paragraph("Shopping List", styles['Title'])
+        elements.append(title)
+        elements.append(Spacer(1, 20))
+
+        # Add date
+        date = Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles['Normal'])
+        elements.append(date)
+        elements.append(Spacer(1, 20))
+
+        # Prepare table data
+        data = [['Item', 'Category', 'Target Fridge', 'Quantity', 'Expected Expiry']]
+        for item in shopping_list:
+            data.append([
+                item['name'],
+                item['kategorie'] or 'Uncategorized',
+                item['fridge_title'],
+                f"{item['menge']} {item['einheit']}",
+                item['haltbarkeit'] or 'Not set'
+            ])
+
+        # Create table
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+
+        elements.append(table)
+        doc.build(elements)
+
+        # Prepare the response
+        buffer.seek(0)
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=f'shopping_list_{datetime.now().strftime("%Y%m%d_%H%M")}.pdf',
+            mimetype='application/pdf'
+        )
+
+    except Exception as e:
+        print(f"Error generating PDF: {str(e)}")
+        return jsonify({"error": "Failed to generate PDF."}), 500

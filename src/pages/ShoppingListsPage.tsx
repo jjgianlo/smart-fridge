@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +56,7 @@ import {
   getFridgesByUser,
   getProductsByUser
 } from '@/api/fridgeApi';
-import { CalendarIcon, Plus, Trash2, Pencil, ShoppingCart, Package } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, Pencil, ShoppingCart, Package, Download } from 'lucide-react';
 
 const ShoppingListsPage: React.FC = () => {
   const { user } = useAuth();
@@ -265,6 +264,49 @@ const ShoppingListsPage: React.FC = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/fridges/shopping_list', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(shoppingList),
+      });
+
+      if (response.ok) {
+        // Get the blob from the response
+        const blob = await response.blob();
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `shopping_list_${new Date().toISOString().split('T')[0]}.pdf`;
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Clean up the URL
+        window.URL.revokeObjectURL(url);
+
+        toast({
+          title: 'Success',
+          description: 'Shopping list exported successfully.',
+        });
+      } else {
+        throw new Error('Failed to export shopping list');
+      }
+    } catch (error) {
+      console.error('Error exporting shopping list:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to export shopping list. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -426,32 +468,41 @@ const ShoppingListsPage: React.FC = () => {
           </Dialog>
           
           {shoppingList.length > 0 && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Clear List
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Clear Shopping List</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to clear your entire shopping list? This action cannot be undone.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="mt-4">
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button variant="destructive" onClick={handleClearList}>
-                      Clear List
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <>
+              <Button 
+                variant="outline"
+                onClick={handleDownload}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export List
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Clear List
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Clear Shopping List</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to clear your entire shopping list? This action cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="mt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button variant="destructive" onClick={handleClearList}>
+                        Clear List
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
           )}
         </div>
       </div>
