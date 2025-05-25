@@ -1,0 +1,161 @@
+
+{% extends "base.html" %}
+
+{% block title %}Products - Smart Fridge{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Products</h1>
+        <button onclick="openAddProductModal()" 
+                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Add Product
+        </button>
+    </div>
+
+    {% if products %}
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul class="divide-y divide-gray-200">
+                {% for product in products %}
+                <li class="px-6 py-4 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-12 w-12">
+                                {% if product.bild_url %}
+                                    <img class="h-12 w-12 rounded-full object-cover" src="{{ product.bild_url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                                <div class="text-sm text-gray-500">
+                                    {% if product.kategorie %}{{ product.kategorie }} • {% endif %}{{ product.einheit }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="editProduct({{ product.product_id }}, '{{ product.name }}', '{{ product.kategorie }}', '{{ product.bild_url }}', '{{ product.einheit }}')" 
+                                    class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                Edit
+                            </button>
+                            <button onclick="deleteProduct({{ product.product_id }})" 
+                                    class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No products</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
+            <div class="mt-6">
+                <button onclick="openAddProductModal()" 
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                    Add Product
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modalTitle">Add Product</h3>
+            <form id="productForm" method="POST" action="/api/products">
+                <input type="hidden" id="productId" name="product_id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" id="productName" name="name" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Category</label>
+                        <input type="text" id="productCategory" name="kategorie" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Unit</label>
+                        <input type="text" id="productUnit" name="einheit" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Image URL</label>
+                        <input type="url" id="productImage" name="bild_url" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeProductModal()" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openAddProductModal() {
+    document.getElementById('modalTitle').textContent = 'Add Product';
+    document.getElementById('productForm').action = '/api/products';
+    document.getElementById('productForm').reset();
+    document.getElementById('productId').value = '';
+    document.getElementById('productModal').classList.remove('hidden');
+}
+
+function editProduct(id, name, category, image, unit) {
+    document.getElementById('modalTitle').textContent = 'Edit Product';
+    document.getElementById('productForm').action = '/api/products/' + id;
+    document.getElementById('productId').value = id;
+    document.getElementById('productName').value = name;
+    document.getElementById('productCategory').value = category || '';
+    document.getElementById('productImage').value = image || '';
+    document.getElementById('productUnit').value = unit;
+    document.getElementById('productModal').classList.remove('hidden');
+}
+
+function closeProductModal() {
+    document.getElementById('productModal').classList.add('hidden');
+}
+
+function deleteProduct(id) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        fetch('/api/products/' + id, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete product');
+                }
+            });
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('productModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeProductModal();
+    }
+});
+</script>
+{% endblock %}
