@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, session
 from flask_cors import CORS
 import requests
@@ -14,7 +13,7 @@ def index():
     """Render the login page if not authenticated, otherwise redirect to products."""
     if 'user_id' in session:
         return redirect(url_for('views.products'))
-    return render_template('login.html')
+    return redirect(url_for('views.login'))
 
 @views_bp.route('/login', methods=['GET', 'POST'])
 def login():
