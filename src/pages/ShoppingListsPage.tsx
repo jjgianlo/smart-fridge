@@ -54,9 +54,10 @@ import {
   updateShoppingListItem,
   clearShoppingList,
   getFridgesByUser,
-  getProductsByUser
+  getProductsByUser,
+  addProductToFridge
 } from '@/api/fridgeApi';
-import { CalendarIcon, Plus, Trash2, Pencil, ShoppingCart, Package, Download } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, Pencil, ShoppingCart, Package, Download, Check } from 'lucide-react';
 
 const ShoppingListsPage: React.FC = () => {
   const { user } = useAuth();
@@ -302,6 +303,39 @@ const ShoppingListsPage: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to export shopping list. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleAddToFridge = async (item: ShoppingListItem) => {
+    try {
+      const success = await addProductToFridge(
+        item.fridge_id,
+        item.product_id,
+        item.menge,
+        item.haltbarkeit,
+        new Date().toISOString().split('T')[0]
+      );
+      
+      if (success) {
+        // Remove the item from shopping list after successfully adding to fridge
+        const removeSuccess = removeFromShoppingList(item.id);
+        if (removeSuccess) {
+          toast({
+            title: 'Success',
+            description: `${item.name} has been added to ${item.fridge_title} and removed from shopping list.`,
+          });
+          fetchData();
+        }
+      } else {
+        throw new Error('Failed to add item to fridge');
+      }
+    } catch (error) {
+      console.error('Error adding item to fridge:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add item to fridge. Please try again.',
         variant: 'destructive',
       });
     }
@@ -693,6 +727,17 @@ const ShoppingListsPage: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-green-50 hover:text-green-600"
+                            onClick={() => handleAddToFridge(item)}
+                            title="Add to fridge"
+                          >
+                            <Check className="h-4 w-4" />
+                            <span className="sr-only">Add to fridge</span>
+                          </Button>
+                          
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button
