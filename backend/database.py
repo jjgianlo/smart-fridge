@@ -302,11 +302,11 @@ def get_contents_of_fridge(fridge_id):
     conn.close()
     return contents
 
-def remove_product_from_fridge(product_id, fridge_id):
+def remove_product_from_fridge(in_fridge_id, fridge_id):
     try:
         conn = create_connection()
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM in_fridge WHERE product_id = ? AND fridge_id = ?', (product_id, fridge_id))
+        cursor.execute('DELETE FROM in_fridge WHERE id = ? AND fridge_id = ?', (in_fridge_id, fridge_id))
         if cursor.rowcount == 0:
             return False
         conn.commit()

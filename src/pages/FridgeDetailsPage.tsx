@@ -703,7 +703,7 @@ const FridgeDetailsPage: React.FC = () => {
                                   <DialogClose asChild>
                                     <Button 
                                       variant="destructive"
-                                      onClick={() => handleRemoveItem(item.product_id)}
+                                      onClick={() => handleRemoveItem(item.entry_id)}
                                     >
                                       Remove
                                     </Button>

@@ -137,8 +137,8 @@ const ProductsPage: React.FC = () => {
         editProduct.product_id,
         editName,
         editCategory,
-        editImageUrl,
         editUnit,
+        editImageUrl,
         editProduct.barcode_path
       );
       

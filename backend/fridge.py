@@ -97,9 +97,9 @@ def get_fridge_contents(fridge_id):
         } for c in contents
     ]), 200
 
-@fridge_bp.route('/<int:fridge_id>/remove/<int:product_id>', methods=['DELETE'])
-def remove_product(fridge_id, product_id):
-    success = remove_product_from_fridge(product_id, fridge_id)
+@fridge_bp.route('/<int:fridge_id>/remove/<int:in_fridge_id>', methods=['DELETE'])
+def remove_product(fridge_id, in_fridge_id):
+    success = remove_product_from_fridge(in_fridge_id, fridge_id)
     if success:
         return jsonify({"message": "Product removed from fridge."}), 200
     return jsonify({"error": "Product not found in fridge or removal failed."}), 404

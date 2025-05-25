@@ -21,7 +21,6 @@ const Sidebar: React.FC = () => {
     { name: 'Dashboard', path: '/', icon: <Home className="h-5 w-5" /> },
     { name: 'My Fridges', path: '/fridges', icon: <Package2 className="h-5 w-5" /> },
     { name: 'Products', path: '/products', icon: <PackageOpen className="h-5 w-5" /> },
-    { name: 'Add Product', path: '/add-product', icon: <PackagePlus className="h-5 w-5" /> },
     { name: 'Settings', path: '/settings', icon: <Settings className="h-5 w-5" /> },
   ];
 
