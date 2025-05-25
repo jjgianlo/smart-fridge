@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import FridgesPage from "./pages/FridgesPage";
 import FridgeDetailsPage from "./pages/FridgeDetailsPage";
 import ProductsPage from "./pages/ProductsPage";
+import ShoppingListsPage from "./pages/ShoppingListsPage";
 import { AuthProvider } from "./context/AuthContext";
 import MainLayout from "./components/layout/MainLayout";
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/fridges" element={<FridgesPage />} />
               <Route path="/fridge/:fridgeId" element={<FridgeDetailsPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/shopping-lists" element={<ShoppingListsPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

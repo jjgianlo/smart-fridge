@@ -32,6 +32,20 @@ export interface Product {
   barcode_path: string;
 }
 
+export interface ShoppingListItem {
+  id: number;
+  product_id: number;
+  name: string;
+  kategorie: string;
+  einheit: string;
+  bild_url: string;
+  menge: number;
+  haltbarkeit: string;
+  lagerdatum: string;
+  fridge_id: number;
+  fridge_title: string;
+}
+
 // Fridge operations
 export const getFridgesByUser = async (userId: number): Promise<Fridge[]> => {
   try {
@@ -209,6 +223,105 @@ export const updateProduct = async (
     return true;
   } catch (error) {
     console.error('Failed to update product:', error);
+    return false;
+  }
+};
+
+// Shopping list operations - using local storage since no backend changes allowed
+export const getShoppingLists = (): ShoppingListItem[] => {
+  try {
+    const lists = localStorage.getItem('shoppingLists');
+    return lists ? JSON.parse(lists) : [];
+  } catch (error) {
+    console.error('Failed to get shopping lists:', error);
+    return [];
+  }
+};
+
+export const saveShoppingLists = (lists: ShoppingListItem[]): void => {
+  try {
+    localStorage.setItem('shoppingLists', JSON.stringify(lists));
+  } catch (error) {
+    console.error('Failed to save shopping lists:', error);
+  }
+};
+
+export const addToShoppingList = (
+  productId: number,
+  name: string,
+  kategorie: string,
+  einheit: string,
+  bildUrl: string,
+  menge: number,
+  haltbarkeit: string,
+  fridgeId: number,
+  fridgeTitle: string
+): boolean => {
+  try {
+    const lists = getShoppingLists();
+    const newItem: ShoppingListItem = {
+      id: Date.now(),
+      product_id: productId,
+      name,
+      kategorie,
+      einheit,
+      bild_url: bildUrl,
+      menge,
+      haltbarkeit,
+      lagerdatum: new Date().toISOString().split('T')[0],
+      fridge_id: fridgeId,
+      fridge_title: fridgeTitle
+    };
+    
+    lists.push(newItem);
+    saveShoppingLists(lists);
+    return true;
+  } catch (error) {
+    console.error('Failed to add to shopping list:', error);
+    return false;
+  }
+};
+
+export const removeFromShoppingList = (itemId: number): boolean => {
+  try {
+    const lists = getShoppingLists();
+    const updatedLists = lists.filter(item => item.id !== itemId);
+    saveShoppingLists(updatedLists);
+    return true;
+  } catch (error) {
+    console.error('Failed to remove from shopping list:', error);
+    return false;
+  }
+};
+
+export const updateShoppingListItem = (
+  itemId: number,
+  menge: number,
+  haltbarkeit: string
+): boolean => {
+  try {
+    const lists = getShoppingLists();
+    const itemIndex = lists.findIndex(item => item.id === itemId);
+    
+    if (itemIndex !== -1) {
+      lists[itemIndex].menge = menge;
+      lists[itemIndex].haltbarkeit = haltbarkeit;
+      saveShoppingLists(lists);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to update shopping list item:', error);
+    return false;
+  }
+};
+
+export const clearShoppingList = (): boolean => {
+  try {
+    saveShoppingLists([]);
+    return true;
+  } catch (error) {
+    console.error('Failed to clear shopping list:', error);
     return false;
   }
 };
