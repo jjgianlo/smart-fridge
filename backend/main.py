@@ -4,7 +4,6 @@ Handles application initialization and configuration.
 """
 
 import os
-import subprocess
 from flask import Flask
 from flask_cors import CORS
 from database import initialize_database
@@ -31,15 +30,6 @@ def create_app():
 
     return app
 
-def start_react_dev_server():
-    """Start React frontend in development mode."""
-    frontend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-    subprocess.Popen(["npm", "run", "dev"], cwd=frontend_path, shell=True)
-
 if __name__ == '__main__':
-    # Optional: Nur im Dev-Modus React starten
-    if os.environ.get("ENV") != "production":
-        start_react_dev_server()
-
     app = create_app()
     app.run(debug=True)

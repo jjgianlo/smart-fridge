@@ -1,73 +1,79 @@
-# Welcome to your Lovable project
+# Smart Fridge - Mitarbeiterbereich
 
-## Project info
+Ein modernes System zur Verwaltung eines Smart Fridge Systems mit React Frontend und FastAPI Backend.
 
-**URL**: https://lovable.dev/projects/85ab6059-1a51-447e-9e7c-e02f04ada50d
+## Installation
 
-## How can I edit this code?
+### Backend
 
-There are several ways of editing your application.
+1. Python 3.8 oder höher installieren
+2. Repository klonen
+3. Virtuelle Umgebung erstellen und aktivieren:
+```bash
+python -m venv venv
+source venv/bin/activate  # Für Linux/Mac
+venv\Scripts\activate     # Für Windows
+```
 
-**Use Lovable**
+4. Backend-Abhängigkeiten installieren:
+```bash
+pip install -r backend/requirements.txt
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/85ab6059-1a51-447e-9e7c-e02f04ada50d) and start prompting.
+### Frontend
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Node.js und npm installieren
+2. Frontend-Abhängigkeiten installieren:
+```bash
+npm install
+```
 
-**Use your preferred IDE**
+## Benötigte Bibliotheken
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Backend
+Die wichtigsten Backend-Bibliotheken sind:
+- fastapi
+- uvicorn
+- python-dotenv
+- supabase
+- jinja2
+- python-multipart
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Follow these steps:
+## Verwendung
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Backend starten
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Über die main.py:
+```bash
+cd backend
+python -m main
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+Der Backend-Server startet standardmäßig auf `http://localhost:5000`
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Frontend starten
+Das Frontend kann im Entwicklungsmodus gestartet werden:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Der Frontend-Entwicklungsserver startet standardmäßig auf `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Features
+- Benutzer-Login-System 
+- Kühlschrank-Verwaltung (Erstellen, Anzeigen, Aktualisieren, Löschen)
+- Produktverwaltung mit Kategorisierung
+- Lagerbestandsverwaltung in Kühlschränken
+- Einkaufslisten-Generierung als PDF
+- Dashboard mit Übersicht über Kühlschränke und Produkte
+- Moderne, responsive Benutzeroberfläche mit CORS-Unterstützung
 
-**Use GitHub Codespaces**
+## API-Endpunkte
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/85ab6059-1a51-447e-9e7c-e02f04ada50d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Die API bietet folgende Hauptendpunkte:
+- `/fridge` - Kühlschrank-Verwaltung
+- `/product` - Produktverwaltung
+- `/user` - Benutzerverwaltung
+- `/in_fridge` - Kühlschrankinhalte-Verwaltung
+- `/shopping_list` - Einkaufslisten-Verwaltung
