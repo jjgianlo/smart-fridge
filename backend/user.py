@@ -1,6 +1,5 @@
-
 from flask import Blueprint, request, jsonify
-from database import add_user, get_user_by_email, get_user_by_id, user_exists_by_email, create_connection
+from database import add_user, get_user_by_credentials, get_user_by_id, user_exists_by_email, create_connection
 
 user_bp = Blueprint('user_bp', __name__, url_prefix='/users')
 
@@ -10,14 +9,22 @@ def create_user():
     if user_exists_by_email(data['email']):
         return jsonify({"error": "E-Mail already exists."}), 409
 
-    success = add_user(data['username'], data['email'], data['password_hash'])
+    success = add_user(data['username'], data['email'], data['password'])
     if success:
         return jsonify({"message": "User created successfully."}), 201
     return jsonify({"error": "User creation failed."}), 500
 
-@user_bp.route('/<email>', methods=['GET'])
-def read_user(email):
-    user = get_user_by_email(email)
+@user_bp.route('/login', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+    
+    user = get_user_by_credentials(email, password)
+    
     if user:
         user_data = {
             "user_id": user[0],
@@ -25,7 +32,8 @@ def read_user(email):
             "email": user[2]
         }
         return jsonify(user_data), 200
-    return jsonify({"error": "User not found."}), 404
+    
+    return jsonify({"error": "Invalid email or password"}), 401
 
 @user_bp.route('/id/<int:user_id>', methods=['GET'])
 def read_user_by_id(user_id):

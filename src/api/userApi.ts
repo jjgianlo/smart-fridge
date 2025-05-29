@@ -1,4 +1,3 @@
-
 // API services for user-related operations
 import axios from 'axios';
 
@@ -12,8 +11,10 @@ export interface User {
 
 export const loginUser = async (email: string, password: string): Promise<User | null> => {
   try {
-    // Call the endpoint to get user by email directly
-    const response = await axios.get(`${API_URL}/users/${email}`);
+    const response = await axios.post(`${API_URL}/users/login`, {
+      email,
+      password
+    });
     return response.data;
   } catch (error) {
     console.error('Login failed:', error);
@@ -26,7 +27,7 @@ export const registerUser = async (username: string, email: string, password: st
     await axios.post(`${API_URL}/users/`, {
       username,
       email,
-      password_hash: password // In a real app, you'd hash this on the client
+      password: password // In a real app, you'd hash this on the client
     });
     return true;
   } catch (error) {

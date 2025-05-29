@@ -32,13 +32,11 @@ npm install
 
 ### Backend
 Die wichtigsten Backend-Bibliotheken sind:
-- fastapi
-- uvicorn
-- python-dotenv
-- supabase
-- jinja2
-- python-multipart
-
+- Flask (Web-Framework)
+- Flask-CORS (Cross-Origin Resource Sharing)
+- Werkzeug (Passwort-Hashing und Sicherheit)
+- ReportLab (PDF-Generierung)
+- Requests (HTTP-Client)
 
 ## Verwendung
 

@@ -1,6 +1,6 @@
-
 import sqlite3
 from sqlite3 import Error
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DATABASE_FILE = 'smart_fridge.db'
 
@@ -99,10 +99,12 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-def add_user(username, email, password_hash):
+def add_user(username, email, password):
     try:
         conn = create_connection()
         cursor = conn.cursor()
+        # Hash the password before storing
+        password_hash = generate_password_hash(password)
         cursor.execute('INSERT INTO user (username, email, password_hash) VALUES (?, ?, ?)',
                        (username, email, password_hash))
         conn.commit()
@@ -113,13 +115,21 @@ def add_user(username, email, password_hash):
     finally:
         conn.close()
 
-def get_user_by_email(email):
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM user WHERE email = ?', (email,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+def get_user_by_credentials(email, password):
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM user WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        
+        if user and check_password_hash(user[3], password):  # user[3] is password_hash
+            return user
+        return None
+    except Error as e:
+        print(f"[get_user_by_credentials] Fehler: {e}")
+        return None
+    finally:
+        conn.close()
 
 def get_user_by_id(user_id):
     conn = create_connection()
